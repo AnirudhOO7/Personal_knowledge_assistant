@@ -1,0 +1,36 @@
+# Web framework
+fastapi
+uvicorn
+
+# LangChain core
+langchain
+langchain-core
+langchain-community
+langchain-text-splitters
+
+# LangChain integrations
+langchain-anthropic
+langchain-huggingface
+langchain-qdrant
+
+# LangGraph (V4 agents)
+langgraph
+
+# Embeddings
+sentence-transformers
+
+# Vector DB
+qdrant-client
+
+# PDF
+pymupdf
+
+# LLM
+anthropic
+
+# Settings
+pydantic-settings
+
+# Utilities
+python-multipart
+python-dotenv
