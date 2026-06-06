@@ -1,4 +1,4 @@
-from langchain.core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 
 RAG_PROMPT= ChatPromptTemplate.from_template("""

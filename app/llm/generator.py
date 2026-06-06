@@ -1,10 +1,11 @@
 import json 
-from langchain.anthropic import ChatAnthropic
+from langchain_anthropic import ChatAnthropic
 from langchain_core.documents import Document
 from app.core.config import settings
 from app.core.logging import get_logger
 from app.llm.prompt import RAG_PROMPT, REFLECTION_PROMPT
 from app.retrieval.retriever import format_context
+from pathlib import Path
 
 logger = get_logger(__name__)
 
@@ -17,7 +18,7 @@ def get_llm()->ChatAnthropic:
     if _llm is None:
         logger.info(f"Loading LLM: {settings.llm_model}")
         _llm = ChatAnthropic(
-            model= setings.llm_model,
+            model= settings.llm_model,
             temperature=settings.llm_temperature,
             max_tokens=settings.llm_max_tokens,
             api_key=settings.anthropic_api_key
@@ -29,7 +30,7 @@ def get_llm()->ChatAnthropic:
 
 
 
-def reflect(question:str, docs:list[documents])->dict:
+def reflect(question:str, docs:list[Document])->dict:
     """
     Evaluate if retrieved context is sufficient to answer the question.
     Returns dict with is_sufficient, reason, and missing fields.
@@ -46,15 +47,15 @@ def reflect(question:str, docs:list[documents])->dict:
     
 
     try:
-    result = json.loads(response.content)
-    logger.info(f"Reflection result: sufficient={result.get('is_sufficient')} | reason={result.get('reason')}")
-    return result
+        result = json.loads(response.content)
+        logger.info(f"Reflection result: sufficient={result.get('is_sufficient')} | reason={result.get('reason')}")
+        return result
     except json.JSONDecodeError:
-    logger.warning("Reflection response was not valid JSON, defaulting to sufficient")
-    return {"is_sufficient": True, "reason": "parse error", "missing": None}
+        logger.warning("Reflection response was not valid JSON, defaulting to sufficient")
+        return {"is_sufficient": True, "reason": "parse error", "missing": None}
 
 
-def generate(question:str , docs: list[documents])->str:
+def generate(question:str , docs: list[Document])->str:
     """Generate a grounded answer from the retrieved docs."""
     llm=get_llm()
     content=format_context(docs)
@@ -64,7 +65,7 @@ def generate(question:str , docs: list[documents])->str:
     chain = RAG_PROMPT | llm
     response = chain.invoke({
     "question": question,
-    "context": context
+    "context": content
     })
 
     return response.content

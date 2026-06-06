@@ -2,6 +2,7 @@ from langchain_core.documents import Document
 from app.vectorstore.qdrant_store import get_vectorstore
 from app.core.config import settings
 from app.core.logging import get_logger
+from pathlib import Path
 
 logger = get_logger(__name__)
 
@@ -21,7 +22,7 @@ def format_context(docs: list[Document])-> str:
     context_parts=[]
 
     for i, doc in enumerate(docs):
-        source = doc.metadata.get("source", "unknown")
+        source = Path(doc.metadata.get("source", "unknown")).name
         page = doc.metadata.get("page", "?")
 
         context_parts.append(
